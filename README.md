@@ -11,7 +11,8 @@ Also i can set the status of each LED.
 What is missing is the display which i will have done soon.
 
 As i am not so good with C++, i am looking for contributors who can make a class for the Fbv and one for the vox.
-The classea should have a constructor with a parameter which serial port to use (hardware/software).
+The classea should have a constructor with a parameter which serial port to use (hardware/software)
+And callback routines for keypressed, key-released, control changed, etc....
 
 I will add the analysed values the next days.
 
