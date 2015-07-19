@@ -11,7 +11,7 @@ Also i can set the status of each LED.
 What is missing is the display which i will have done soon.
 
 I coded a class Line6Fbv you can use in an Aruino Project which reponds to the Switches an Pedals and switches LEDs.
-Together with the Arduino MIDI Library and a little coding it is possible to Control any Unit that responds zo MIDI.
+Together with the Arduino MIDI Library and a little coding it is possible to Control any Unit that responds to MIDI.
 
 
 
