@@ -4,6 +4,7 @@ currently supported:
 
 - receiving KeyPressed and KeyReleased messages
 - receiving Pedal Position Changes
+- receiving a heartbeat (every 7 seconds)
 - switching LEDs on and of
 - switch Display Backlight on and off
 
