@@ -2,9 +2,9 @@
 	*  @file       Line6Fbv.h
 	*  Project     Arduino Line6 FBV Longboard to MIDI Library
 	*  @brief      Line6 FBV Library for the Arduino
-	*  @version    0.2
+	*  @version    0.4
 	*  @author     Joachim Wrba
-	*  @date       22/07/15
+	*  @date       09/08/15
 	*  @license    GPL v3.0
 	*
 	*  This program is free software: you can redistribute it and/or modify
@@ -21,12 +21,50 @@
 	*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+/*
+====Data received from the FBV:
+
+a heartbeat is sent every 7 seconds
+F0 02 90 00
+F0 02 30 08
+
+Switches: 
+F0 03 81 <key-code><pressed=01/released=00>
+
+Pedals:
+F0 03 82 <00=Wah/01=Vol><Value 00 – 7F>
+
+====Data sent to the FBV
+
+LEDs on/off
+F0 03 04 <key-code><00=off/01=on>
+
+Display:
+the 16 char title
+F0 13 10 00 10 <16 char title>
+
+the first 4 digits separate:
+the first three must be numeric or space
+F0 02 <numDigit = 0-3> <char>   
+
+the first 4 digits together
+F0 05 08 + 4 characters (1-3 numeric)
+
+clear title
+F0 01 11
+
+the flat sign
+F0 02 20 <00=off/01=on>
+
+
+*/
+
 #ifndef LINE6FBV_H
 #define LINE6FBV_H
 
 #include <Arduino.h>
 
-// Constants used for different switches ans LEDs
+// Constants used for different switches and LEDs
 // Switch + LED
 const byte LINE6FBV_FXLOOP = 0x02;
 const byte LINE6FBV_STOMP1 = 0x12;
@@ -62,6 +100,8 @@ const byte LINE6FBV_DISPLAY = 0x0A;
 const byte LINE6FBV_PDL1 = 0x00;
 const byte LINE6FBV_PDL2 = 0x01;
 
+
+// internal use only, don't know how to code a constant inside the class
 const int LINE6FBV_NUM_LED = 23;
 const int LINE6FBV_FLASH_TIME = 50;
 
@@ -79,36 +119,35 @@ public:
 	// just the constructor
 	Line6Fbv();
 
-	// assign the Serial to be used (Serial1, Serial2, Serial3, Serial)
 	void begin(HardwareSerial* inSerial);
 
 	// interpret incoming bytes and fire callback functions
 	void read();
 
-	// switch status of a LED on or off
+	// switch status of a LED on or off --> updateUI must be called
 	void setLedOnOff(byte inLed, byte inOnOff);
 
-	// set staus of  a LED to flash 
+	// set staus of  a LED to flash --> updateUI must be called
 	void setLedFlash(byte inLed, int inDelayTime);
 
 	// process all LED changes on the FBV at once
 	void updateUI();
 
-	// set the 16 character Title
+	// set the 16 character Title --> updateUI must be called
 	void setDisplayTitle(char* inTitle);
 
-	// set one of the first 4 digits (inNumDigit = 0-3):
+	// set one of the first 4 digits (inNumDigit = 0-3): --> updateUI must be called
 	// the first 3 can be a character '0' - '9' or space
 	// the 4th is used for channels A-D or note names
 	void setDisplayDigit(int inNumDigit, char inDigit);
 
-	// set the first 4 digits at once
-	void setDisplayDigits(char* inDigits);
+	// set the first 4 digits at once --> updateUI must be called
+	void setDisplayDigits(char* inDigits); 
 
-	// display the flat sign (b)
-	void setDisplayFlat(byte inOnOff);
+	// display the flat sign (b) --> updateUI must be called
+	void setDisplayFlat(byte inOnOff); 
 
-	// display the flat sign (b)
+	// let the diusplay light flash --> updateUI must be called
 	void setDisplayFlash(int inOnTime, int inOffTime);
 
 	// set a callback Function for pressed Key
@@ -163,7 +202,7 @@ private:
 	};
 
 	Display mDisplay;
-	Display mDisplayEmpty;
+	Display mDisplayEmpty;  // for flashing
 	LedValues mLedValues[LINE6FBV_NUM_LED];
 	HardwareSerial * mSerial;
 	byte mDataBytes[5];

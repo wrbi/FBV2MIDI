@@ -2,9 +2,9 @@
 	*  @file       VoxAd60Vt.cpp
 	*  Project     Arduino Line6 FBV Longboard to MIDI Library
 	*  @brief      Line6 FBV Library for the Arduino
-	*  @version    0.1
+	*  @version    0.2
 	*  @author     Joachim Wrba
-	*  @date       17/07/15
+	*  @date       09/08/15
 	*  @license    GPL v3.0
 	*
 	*  This Program is free software: you can redistribute it and/or modify
@@ -35,17 +35,14 @@ VoxAd60Vt::VoxAd60Vt() {
 	mDataBytes[0] = 0;
 	mByteCount = 0;
 	mBytesExpected = 0;
+    
 
 }
 
-
-
-void VoxAd60Vt::begin(HardwareSerial * inSerial) {
+void VoxAd60Vt::begin(HardwareSerial * inSerial){
 	mSerial = inSerial;
-	mSerial->begin(32150);
+	mSerial->begin(32150);	
 }
-
-
 void VoxAd60Vt::setHandleStomp(FunctTypeCbStomp* cb) {
 	mCbStomp = cb;
 }
@@ -92,6 +89,7 @@ void VoxAd60Vt::read() {
 					mDataBytes[0] = inByte;
 					mByteCount = 1;
 					mBytesExpected = 3;
+					break;
 				case 0xC0: // Pgm Change
 					mDataBytes[0] = inByte;
 					mByteCount = 1;
@@ -148,7 +146,6 @@ void VoxAd60Vt::read() {
 								mCbStomp(stompPdl, stompMod, stompDly, stompRev);
 							}
 						}
-						break;
 						break;
 					case 0xA0: // Tuner 
 						if (mDataBytes[1] == 0x00){
@@ -250,7 +247,7 @@ void VoxAd60Vt::switchStompBoxes(byte inPdl, byte inMod, byte inDly, byte inRev)
 
 	byte stompBoxes = 0x70;
 
-	if (inPdl) {
+	if (inPdl){
 		stompBoxes += 1;
 	}
 	if (inMod){

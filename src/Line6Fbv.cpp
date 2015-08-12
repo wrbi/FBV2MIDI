@@ -2,9 +2,9 @@
 	*  @file       Line6Fbv.cpp
 	*  Project     Arduino Line6 FBV Longboard to MIDI Library
 	*  @brief      Line6 FBV Library for the Arduino
-	*  @version    0.2
+	*  @version    0.4
 	*  @author     Joachim Wrba
-	*  @date       22/07/15
+	*  @date       09/08/15
 	*  @license    GPL v3.0
 	*
 	*  This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,8 @@
 
 Line6Fbv::Line6Fbv() {
 
+	
+	
 	mCbKeyPressed = 0;
 	mCbKeyReleased = 0;
 	mCbCtrlChanged = 0;
@@ -79,6 +81,7 @@ Line6Fbv::Line6Fbv() {
 void Line6Fbv::begin(HardwareSerial * inSerial) {
 	mSerial = inSerial;
 	mSerial->begin(32150);
+
 }
 
 
@@ -337,8 +340,8 @@ void Line6Fbv::setDisplayDigit(int inNum, char inDigit){
 
 	if (inNum < 3)
 		mDisplay.numDigits[inNum] = inDigit;
-	else;
-	mDisplay.noteDigit = inDigit;
+	else
+	   mDisplay.noteDigit = inDigit;
 
 }
 

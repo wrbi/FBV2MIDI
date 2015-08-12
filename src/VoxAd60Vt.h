@@ -2,9 +2,9 @@
 	*  @file       VoxAd60Vt.h
 	*  Project     Arduino Line6 FBV Longboard to MIDI Library
 	*  @brief      Line6 FBV Library for the Arduino
-	*  @version    0.1
+	*  @version    0.2
 	*  @author     Joachim Wrba
-	*  @date       17/07/15
+	*  @date       09/08/15
 	*  @license    GPL v3.0
 	*
 	*  This Program is free software: you can redistribute it and/or modify
@@ -45,9 +45,8 @@ public:
 	// just the constructor
 	VoxAd60Vt();
 
-	// assign the Serial to be used (Serial1, Serial2, Serial3, Serial)
 	void begin(HardwareSerial* inSerial);
-
+	
 	// interpret incoming bytes and fire callback functions
 	void read();
 

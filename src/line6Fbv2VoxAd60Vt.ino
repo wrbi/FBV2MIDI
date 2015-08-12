@@ -1,44 +1,46 @@
 /*
-   *  @file       line6Fbv2VoxAd60Vt.ino
-   *  Project     Arduino Line6 FBV Longboard to MIDI Library
-   *  @brief      Line6 FBV Library for the Arduino
-   *  @version    0.2
-   *  @author     Joachim Wrba
-   *  @date       22/07/15
-   *  @license    GPL v3.0
-   *
-   *  This program is free software: you can redistribute it and/or modify
-   *  it under the terms of the GNU General Public License as published by
-   *  the Free Software Foundation, either version 3 of the License, or
-   *  (at your option) any later version.
-   *
-   *  This program is distributed in the hope that it will be useful,
-   *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-   *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   *  GNU General Public License for more details.
-   *
-   *  You should have received a copy of the GNU General Public License
-   *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-   ==========================================================================
-   Control the VOX AD 60/120 VT(X)
-   with a Line6 FBV instead of the VC-12
-   ---------------------------------------------------------------------------
-   No switching between Stomp and Channel Mode
-   as there are enough Switches :-)
-   - Amp1, Amp2 + Pdl1 Switches activate the Pedal Stomp Box
-   - Modulation, Reverb Delay and Tap use the corresponding switches
-   - FX Loop = Tuner
-   - Stomp 1 = Tuner silent
-   - Bank up/down and Channel A-D are used to select the Programs
+*  @file       line6Fbv2VoxAd60Vt.ino
+*  Project     Arduino Line6 FBV Longboard to MIDI Library
+*  @brief      Line6 FBV Library for the Arduino
+*  @version    0.4
+*  @author     Joachim Wrba
+*  @date       11/08/15
+*  @license    GPL v3.0
+*
+*  This program is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, either version 3 of the License, or
+*  (at your option) any later version.
+*
+*  This program is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+==========================================================================
+Control the VOX AD 60/120 VT(X)
+with a Line6 FBV instead of the VC-12
+---------------------------------------------------------------------------
+No switching between Stomp and Channel Mode necessary
+as there are enough Switches :-)
+- Amp1, Amp2 + Pdl1 Switches activate the Pedal Stomp Box
+- Modulation, Reverb Delay and Tap use the corresponding switches
+- FX Loop = Tuner
+- Stomp 1 = Tuner silent
+- Bank up/down and Channel A-D are used to select the Programs
 
-   - as a special feature i made a Wah auto on/off function
-   if the Effect is off by default, the auto mode is activated.
-   When the Pedal is moved, the effect is automatically switched on
-   and after 0,7 seconds of no movement it is turned off again
-   ----------------------------------------------------------------------------
-   
+- as a special feature i made a Wah auto on/off function
+if the Effect is off by default, the auto mode is activated.
+When the Pedal is moved, the effect is automatically switched on
+and after 0,7 seconds of no movement it is turned off again
+----------------------------------------------------------------------------
+the update of LEDs ans display is programmes quick and dirty in different functions
+this should be optimized
+---------------------------------------------------------------------------
 
-   */
+*/
 #include "Line6Fbv.h"
 #include "VoxAd60Vt.h"
 
@@ -78,7 +80,7 @@ const int mMaxDelayTime = 2000;
 byte mTunerIsOn = 0;
 byte mTunerIsSilent = 0;
 
-
+// switch wah in auto-on-off-mode off after mWahOnOffInterval ( i use 0,7s)
 void fWahAutoOff(){
 	unsigned long currentMillis;
 
@@ -93,6 +95,7 @@ void fWahAutoOff(){
 	}
 }
 
+// Deactivate TAP Mode after 2s not tapping (2s = max delay time)
 void fDeactivateTapMode(){
 	unsigned long currentMillis;
 
@@ -106,7 +109,7 @@ void fDeactivateTapMode(){
 }
 
 
-
+// respond to pressed keys on the FBV
 void onFbvKeyPressed(byte inKey) {
 	byte switchStomp = 0;
 	byte switchBank = 0;
@@ -137,11 +140,11 @@ void onFbvKeyPressed(byte inKey) {
 		switchStomp = 1;
 		break;
 	case LINE6FBV_UP:
-		mFbv.setLedOnOff(LINE6FBV_UP,1);
+		mFbv.setLedOnOff(LINE6FBV_UP, 1);  // light LED until released
 		switchBank = 1;
 		break;
 	case LINE6FBV_DOWN:
-		mFbv.setLedOnOff(LINE6FBV_DOWN,1);
+		mFbv.setLedOnOff(LINE6FBV_DOWN, 1); // light LED until released
 		switchBank = 1;
 		break;
 	case  LINE6FBV_CHANNELA:
@@ -174,11 +177,15 @@ void onFbvKeyPressed(byte inKey) {
 void fSetStompLeds(){
 	mFbv.setLedOnOff(LINE6FBV_PDL1_GRN, mActStatusPdl);
 	mFbv.setLedOnOff(LINE6FBV_AMP1, mActStatusPdl);
+
 	mFbv.setLedOnOff(LINE6FBV_MOD, mActStatusMod);
+
 	mFbv.setLedOnOff(LINE6FBV_REVERB, mActStatusRev);
+
 	mFbv.setLedOnOff(LINE6FBV_DELAY, mActStatusDly);
 }
 
+// send delay time every tap starting with the second tap to get an interval
 void fProcessTap(){
 	int ms;
 
@@ -199,8 +206,10 @@ void fProcessTuner(byte inKey){
 	if (mTunerIsOn){
 		mVox.switchTuner(0, 0);
 		mTunerIsSilent = 0;
+		fDisplayPgmInfo();
 	}
 	else{
+		onVoxTunerValue(0x3b, 0x20);
 		if (inKey == LINE6FBV_STOMP1){
 			mVox.switchTuner(1, 1);
 			mTunerIsSilent = 1;
@@ -213,6 +222,7 @@ void fProcessTuner(byte inKey){
 	mTunerIsOn = !mTunerIsOn;
 	fSetTunerLed();
 }
+
 
 void fChangeProgram(byte inKey){
 	byte pgmNum;
@@ -249,7 +259,7 @@ void fChangeProgram(byte inKey){
 		mVox.sendCtlChange(VOXAD60VT_VOL, mActValVol);  // send Vol Pedal Pos  
 
 		fDisplayPgmInfo();      // update display
-		
+
 	}
 
 
@@ -274,12 +284,14 @@ void fSetNewBankValue(byte inKey){
 	Serial.print("APP mNextBank");
 	Serial.println(mNextBank);
 
-	// ToDo  Neue Bank im Display anzeigen
+	// Display new bank in the title field
 
 	if (mNextBank != mActBank){
+		/* unfortunately not displayable characters
 		title[2] = '=';
 		title[3] = '=';
 		title[4] = '>';
+		*/
 		title[6] = 0x31 + mNextBank;
 	}
 
@@ -290,14 +302,16 @@ void fSetNewBankValue(byte inKey){
 
 
 void onFbvKeyReleased(byte inKey) {
-//	mFbv.setLedOnOff(inKey, 0x00);
+	//	mFbv.setLedOnOff(inKey, 0x00);
 
-switch(inKey){
+	switch (inKey){
 	case LINE6FBV_UP:
-			mFbv.setLedOnOff(LINE6FBV_UP,0);
+		mFbv.setLedOnOff(LINE6FBV_UP, 0);
+		break;
 	case LINE6FBV_DOWN:
-			mFbv.setLedOnOff(LINE6FBV_DOWN,0);
-}
+		mFbv.setLedOnOff(LINE6FBV_DOWN, 0);
+		break;
+	}
 
 }
 
@@ -355,6 +369,8 @@ void fDisplayPgmInfo(){
 
 	mFbv.setDisplayDigit(0, 0x20);
 	mFbv.setDisplayDigit(1, bankDigit);
+	mFbv.setDisplayDigit(2, 0x20);
+	mFbv.setDisplayDigit(3, 0x20);
 	mFbv.setDisplayFlat(0);
 	mFbv.setDisplayTitle("");
 	mFbv.setLedOnOff(LINE6FBV_CHANNELA, channels[0]);
@@ -387,8 +403,8 @@ void onVoxStomp(byte inPdl, byte inMod, byte inDly, byte inRev){
 		if (inPdl)
 			mWahAutoOnOff = 0;
 		else{
-		mWahAutoOnOff = 1;
-		Serial.println("APP Wah Auto=On");
+			mWahAutoOnOff = 1;
+			Serial.println("APP Wah Auto=On");
 		}
 		mWaitForStompInfo = 0;
 	}
@@ -413,12 +429,15 @@ void onVoxTunerOnOff(byte inOnOff){
 		mTunerIsSilent = 0;
 		fDisplayPgmInfo();
 	}
-		
+	else{
+		onVoxTunerValue(0x3b, 0x20);
+	}
 	fSetTunerLed();
 }
 
 void onVoxTunerSilent(){
 	mTunerIsSilent = 1;
+	mTunerIsOn = 1;
 	fSetTunerLed();
 }
 
@@ -538,15 +557,20 @@ void onVoxReset(){
 void setup() {
 
 	Serial.begin(38400);
-	// use Serial1 Port on Arduino Mega
-	mFbv.begin(&Serial1);
+
+	// use Serial1 Port on Arduino Mega for the FBV
+	mFbv.begin(&Serial1); // open port
+
+	// set callback functions for the FBV
 	mFbv.setHandleKeyPressed(&onFbvKeyPressed);
 	mFbv.setHandleKeyReleased(&onFbvKeyReleased);
 	mFbv.setHandleHeartbeat(&onFbvHeartbeat);
 	mFbv.setHandleCtrlChanged(&onFbvCtlChanged);
 
-	// use Serial3 Port on Arduino Mega
-	mVox.begin(&Serial2);
+	// use Serial2 Port on Arduino Mega for the VOX
+	mVox.begin(&Serial2); // open port
+
+	// set callback functions for the VOX
 	mVox.setHandleStomp(&onVoxStomp);
 	mVox.setHandleDelayTime(&onVoxDelayTime);
 	mVox.setHandleTunerValue(&onVoxTunerValue);
@@ -555,23 +579,22 @@ void setup() {
 	mVox.setHandlePgmChanged(&onVoxPgmChanged);
 	mVox.setHandleReset(&onVoxReset);
 
+	// switch dispay light on and display "hello world"
 	mFbv.setLedOnOff(LINE6FBV_DISPLAY, 1);
-	
-	mFbv.setDisplayTitle("Wrbi@orbi");
+	mFbv.setDisplayTitle("HELLO WORLD");
 	Serial.println("ready");
 
 }
 
 void loop() {
 
-	mFbv.read();
+	mFbv.read();  // Receive Commands from FBV
 
-	mVox.read();
+	mVox.read(); // Receive Commands from VOX
 
-	mFbv.updateUI();
+	fWahAutoOff(); // switch auto-wah off if time expired
 
-	fWahAutoOff();
+	fDeactivateTapMode(); // leave tap mode if time expired
 
-	fDeactivateTapMode();
-
+	mFbv.updateUI();  // update Display and LEDs on the FBV to the values set in the setDisplay..... routines
 }
