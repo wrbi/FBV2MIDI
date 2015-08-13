@@ -5,7 +5,7 @@ Update!!!
 now i'm able to control my VOX with the FBV!!!
 
 
-I want to use the FBV longboard with a Vox AD120VT. 
+==========================================================
 
 Both units have a proprietary data protocol.
 I alrady analysed the Vox some time ago. 
