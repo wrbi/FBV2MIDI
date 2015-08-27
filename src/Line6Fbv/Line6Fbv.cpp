@@ -1,34 +1,35 @@
 /*!
-	*  @file       Line6Fbv.cpp
-	*  Project     Arduino Line6 FBV Longboard to MIDI Library
-	*  @brief      Line6 FBV Library for the Arduino
-	*  @version    0.4
-	*  @author     Joachim Wrba
-	*  @date       09/08/15
-	*  @license    GPL v3.0
-	*
-	*  This program is free software: you can redistribute it and/or modify
-	*  it under the terms of the GNU General Public License as published by
-	*  the Free Software Foundation, either version 3 of the License, or
-	*  (at your option) any later version.
-	*
-	*  This program is distributed in the hope that it will be useful,
-	*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-	*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	*  GNU General Public License for more details.
-	*
-	*  You should have received a copy of the GNU General Public License
-	*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	*/
+*  @file       Line6Fbv.cpp
+*  Project     Arduino Line6 FBV Longboard to MIDI Library
+*  @brief      Line6 FBV Library for the Arduino
+*  @version    0.4
+*  @author     Joachim Wrba
+*  @date       09/08/15
+*  @license    GPL v3.0
+*
+*  This program is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, either version 3 of the License, or
+*  (at your option) any later version.
+*
+*  This program is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include "Line6Fbv.h"
 //#include <Arduino.h>
 
 Line6Fbv::Line6Fbv() {
 
-	
-	
+
+
 	mCbKeyPressed = 0;
 	mCbKeyReleased = 0;
+	mCbKeyHeld = 0;
 	mCbCtrlChanged = 0;
 	mCbHeartbeat = 0;
 
@@ -36,35 +37,40 @@ Line6Fbv::Line6Fbv() {
 	mByteCount = 0;
 	mBytesExpected = 0;
 
-	mLedValues[0].key = LINE6FBV_FXLOOP;
-	mLedValues[1].key = LINE6FBV_STOMP1;
-	mLedValues[2].key = LINE6FBV_STOMP2;
-	mLedValues[3].key = LINE6FBV_STOMP3;
-	mLedValues[4].key = LINE6FBV_AMP1;
-	mLedValues[5].key = LINE6FBV_AMP2;
-	mLedValues[6].key = LINE6FBV_REVERB;
-	mLedValues[7].key = LINE6FBV_PITCH;
-	mLedValues[8].key = LINE6FBV_MOD;
-	mLedValues[9].key = LINE6FBV_DELAY;
-	mLedValues[10].key = LINE6FBV_TAP;
-	mLedValues[11].key = LINE6FBV_UP;
-	mLedValues[12].key = LINE6FBV_DOWN;
-	mLedValues[13].key = LINE6FBV_CHANNELA;
-	mLedValues[14].key = LINE6FBV_CHANNELB;
-	mLedValues[15].key = LINE6FBV_CHANNELC;
-	mLedValues[16].key = LINE6FBV_CHANNELD;
-	mLedValues[17].key = LINE6FBV_FAVORITE;
-	mLedValues[18].key = LINE6FBV_PDL1_GRN;
-	mLedValues[19].key = LINE6FBV_PDL1_RED;
-	mLedValues[20].key = LINE6FBV_PDL2_GRN;
-	mLedValues[21].key = LINE6FBV_PDL2_RED;
-	mLedValues[22].key = LINE6FBV_DISPLAY;
+	mLedAndSwitch[0].key = LINE6FBV_FXLOOP;
+	mLedAndSwitch[1].key = LINE6FBV_STOMP1;
+	mLedAndSwitch[2].key = LINE6FBV_STOMP2;
+	mLedAndSwitch[3].key = LINE6FBV_STOMP3;
+	mLedAndSwitch[4].key = LINE6FBV_AMP1;
+	mLedAndSwitch[5].key = LINE6FBV_AMP2;
+	mLedAndSwitch[6].key = LINE6FBV_REVERB;
+	mLedAndSwitch[7].key = LINE6FBV_PITCH;
+	mLedAndSwitch[8].key = LINE6FBV_MOD;
+	mLedAndSwitch[9].key = LINE6FBV_DELAY;
+	mLedAndSwitch[10].key = LINE6FBV_TAP;
+	mLedAndSwitch[11].key = LINE6FBV_UP;
+	mLedAndSwitch[12].key = LINE6FBV_DOWN;
+	mLedAndSwitch[13].key = LINE6FBV_CHANNELA;
+	mLedAndSwitch[14].key = LINE6FBV_CHANNELB;
+	mLedAndSwitch[15].key = LINE6FBV_CHANNELC;
+	mLedAndSwitch[16].key = LINE6FBV_CHANNELD;
+	mLedAndSwitch[17].key = LINE6FBV_FAVORITE;
+	mLedAndSwitch[18].key = LINE6FBV_PDL1_GRN;
+	mLedAndSwitch[19].key = LINE6FBV_PDL1_RED;
+	mLedAndSwitch[20].key = LINE6FBV_PDL2_GRN;
+	mLedAndSwitch[21].key = LINE6FBV_PDL2_RED;
+	mLedAndSwitch[22].key = LINE6FBV_DISPLAY;
+	mLedAndSwitch[23].key = LINE6FBV_PDL1;
+	mLedAndSwitch[24].key = LINE6FBV_PDL2;
 
-	for (int i = 0; i < LINE6FBV_NUM_LED; i++){
-		mLedValues[i].isOn = 0;
-		mLedValues[i].setOn = 0;
-		mLedValues[i].setOff = 0;
-		mLedValues[i].flash = 0;
+
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		mLedAndSwitch[i].isOn = 0;
+		mLedAndSwitch[i].setOn = 0;
+		mLedAndSwitch[i].setOff = 0;
+		mLedAndSwitch[i].flash = 0;
+		mLedAndSwitch[i].holdTime = LINE6FBV_HOLD_TIME;
+		mLedAndSwitch[i].isHeld = 0;
 	}
 
 	mDisplayEmpty.numDigits[0] = 0x20;
@@ -93,6 +99,11 @@ void Line6Fbv::setHandleKeyReleased(FunctTypeCbKeyReleased* cb) {
 	mCbKeyReleased = cb;
 }
 
+void Line6Fbv::setHandleKeyHeld(FunctTypeCbKeyHeld* cb) {
+	mCbKeyHeld = cb;
+}
+
+
 void Line6Fbv::setHandleCtrlChanged(FunctTypeCbCtrlChanged* cb) {
 	mCbCtrlChanged = cb;
 }
@@ -105,19 +116,19 @@ void Line6Fbv::setHandleHeartbeat(FunctTypeCbHeartbeat* cb) {
 void Line6Fbv::setLedOnOff(byte inLed, byte inOnOff) {
 
 	// Find the Switch in the array and set the value
-	for (int i = 0; i < LINE6FBV_NUM_LED; i++){
-		if (mLedValues[i].key == inLed){
-			mLedValues[i].flash = 0;
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		if (mLedAndSwitch[i].key == inLed){
+			mLedAndSwitch[i].flash = 0;
 			if (inOnOff){
-				mLedValues[i].setOn = 1;
-				mLedValues[i].setOff = 0;
+				mLedAndSwitch[i].setOn = 1;
+				mLedAndSwitch[i].setOff = 0;
 			}
 			else{
-				mLedValues[i].setOff = 1;
-				mLedValues[i].setOn = 0;
+				mLedAndSwitch[i].setOff = 1;
+				mLedAndSwitch[i].setOn = 0;
 			}
 
-			i = LINE6FBV_NUM_LED; // exit loop
+			i = LINE6FBV_NUM_LED_AND_SWITCH; // exit loop
 		}
 	}
 
@@ -126,20 +137,20 @@ void Line6Fbv::setLedOnOff(byte inLed, byte inOnOff) {
 void Line6Fbv::setLedFlash(byte inLed, int inDelayTime) {
 
 	// Find the Switch in the array and set the value
-	for (int i = 0; i < LINE6FBV_NUM_LED; i++){
-		if (mLedValues[i].key == inLed){
-			mLedValues[i].flash = 1;
-			mLedValues[i].isOn = 0;
-			mLedValues[i].lastMillis = 0;
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		if (mLedAndSwitch[i].key == inLed){
+			mLedAndSwitch[i].flash = 1;
+			mLedAndSwitch[i].isOn = 0;
+			mLedAndSwitch[i].lastMillis = 0;
 			if (inDelayTime > LINE6FBV_FLASH_TIME){
-				mLedValues[i].offTime = inDelayTime - LINE6FBV_FLASH_TIME; // ToDo intervals < 50 ms
-				mLedValues[i].onTime = LINE6FBV_FLASH_TIME;
+				mLedAndSwitch[i].offTime = inDelayTime - LINE6FBV_FLASH_TIME; // ToDo intervals < 50 ms
+				mLedAndSwitch[i].onTime = LINE6FBV_FLASH_TIME;
 			}
 			else{
-				mLedValues[i].offTime = inDelayTime / 2;
-				mLedValues[i].onTime = inDelayTime / 2;
+				mLedAndSwitch[i].offTime = inDelayTime / 2;
+				mLedAndSwitch[i].onTime = inDelayTime / 2;
 			}
-			i = LINE6FBV_NUM_LED; // exit loop
+			i = LINE6FBV_NUM_LED_AND_SWITCH; // exit loop
 		}
 	}
 
@@ -150,46 +161,46 @@ void Line6Fbv::updateUI(){
 
 
 	// LEDs
-	for (int i = 0; i < LINE6FBV_NUM_LED; i++){
-		if (mLedValues[i].setOn){
-			mLedValues[i].setOn = 0;
-			mLedValues[i].isOn = 1;
-			mLedValues[i].flash = 0;
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		if (mLedAndSwitch[i].setOn){
+			mLedAndSwitch[i].setOn = 0;
+			mLedAndSwitch[i].isOn = 1;
+			mLedAndSwitch[i].flash = 0;
 			mSerial->write(0xF0);
 			mSerial->write(0x03);
 			mSerial->write(0x04);
-			mSerial->write(mLedValues[i].key);
+			mSerial->write(mLedAndSwitch[i].key);
 			mSerial->write(0x01);
 			//			Serial.print("LED On  : ");
-			//			Serial.println(mLedValues[i].key, HEX);
+			//			Serial.println(mLedAndSwitch[i].key, HEX);
 		}
-		else 		if (mLedValues[i].setOff){
+		else 		if (mLedAndSwitch[i].setOff){
 			//			Serial.print("LED Off  : ");
-			//			Serial.println(mLedValues[i].key, HEX);
-			mLedValues[i].setOff = 0;
-			mLedValues[i].isOn = 0;
-			mLedValues[i].flash = 0;
+			//			Serial.println(mLedAndSwitch[i].key, HEX);
+			mLedAndSwitch[i].setOff = 0;
+			mLedAndSwitch[i].isOn = 0;
+			mLedAndSwitch[i].flash = 0;
 			mSerial->write(0xF0);
 			mSerial->write(0x03);
 			mSerial->write(0x04);
-			mSerial->write(mLedValues[i].key);
+			mSerial->write(mLedAndSwitch[i].key);
 			mSerial->write(0x00);
 		}
-		else if (mLedValues[i].flash){
+		else if (mLedAndSwitch[i].flash){
 			//			Serial.print("LED flash  : ");
-			//			Serial.println(mLedValues[i].key, HEX);
-			if (currentMillis - mLedValues[i].lastMillis >= mLedValues[i].waitTime) {
-				mLedValues[i].lastMillis = currentMillis;
-				if (!mLedValues[i].isOn)
-					mLedValues[i].waitTime = mLedValues[i].onTime;
+			//			Serial.println(mLedAndSwitch[i].key, HEX);
+			if (currentMillis - mLedAndSwitch[i].lastMillis >= mLedAndSwitch[i].waitTime) {
+				mLedAndSwitch[i].lastMillis = currentMillis;
+				if (!mLedAndSwitch[i].isOn)
+					mLedAndSwitch[i].waitTime = mLedAndSwitch[i].onTime;
 				else
-					mLedValues[i].waitTime = mLedValues[i].offTime;
-				mLedValues[i].isOn = !mLedValues[i].isOn;
+					mLedAndSwitch[i].waitTime = mLedAndSwitch[i].offTime;
+				mLedAndSwitch[i].isOn = !mLedAndSwitch[i].isOn;
 				mSerial->write(0xF0);
 				mSerial->write(0x03);
 				mSerial->write(0x04);
-				mSerial->write(mLedValues[i].key);
-				mSerial->write(mLedValues[i].isOn);
+				mSerial->write(mLedAndSwitch[i].key);
+				mSerial->write(mLedAndSwitch[i].isOn);
 			}
 		}
 
@@ -224,13 +235,6 @@ void Line6Fbv::updateUI(){
 				sendDisplayData(mDisplayEmpty);
 		}
 	}
-
-
-
-
-
-
-
 }
 
 void Line6Fbv::read() {
@@ -305,10 +309,12 @@ void Line6Fbv::read() {
 							break;
 						case 0x81:
 							if (mDataBytes[4] == 0x00 && mCbKeyReleased) {
-								mCbKeyReleased(mDataBytes[3]);
+
+								mCbKeyReleased(mDataBytes[3], mStopHold(mDataBytes[3]));
 							}
 
 							if (mDataBytes[4] == 0x01 && mCbKeyPressed) {
+								mStartHold(mDataBytes[3]);
 								mCbKeyPressed(mDataBytes[3]);
 							}
 
@@ -320,6 +326,7 @@ void Line6Fbv::read() {
 			}
 		}
 	}
+	mCheckHold();   // check elapsed time for "hold" state
 }
 
 void Line6Fbv::setDisplayTitle(char* inTitle){
@@ -341,7 +348,7 @@ void Line6Fbv::setDisplayDigit(int inNum, char inDigit){
 	if (inNum < 3)
 		mDisplay.numDigits[inNum] = inDigit;
 	else
-	   mDisplay.noteDigit = inDigit;
+		mDisplay.noteDigit = inDigit;
 
 }
 
@@ -374,17 +381,17 @@ void Line6Fbv::setDisplayFlash(int inOnTime, int inOffTime){
 
 void Line6Fbv::sendDisplayData(Display inDisplay){
 	/* each of the first 4 digits:
-		mSerial->write(0xF0);
-		mSerial->write(0x02);
-		mSerial->write(numDigit);
-		mSerial->write(inDigit);
-		*/
+	mSerial->write(0xF0);
+	mSerial->write(0x02);
+	mSerial->write(numDigit);
+	mSerial->write(inDigit);
+	*/
 
 	/* clear display title
-		Serial1.write(0xF0);
-		Serial1.write(0x01);
-		Serial1.write(0x11);
-		*/
+	Serial1.write(0xF0);
+	Serial1.write(0x01);
+	Serial1.write(0x11);
+	*/
 
 	// the first 4 digits together
 	mSerial->write(0xF0);
@@ -413,3 +420,51 @@ void Line6Fbv::sendDisplayData(Display inDisplay){
 
 
 }
+
+void Line6Fbv::mStartHold(byte inKey){
+	// Find the Switch in the array and set the value
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		if (mLedAndSwitch[i].key == inKey){
+			mLedAndSwitch[i].isHeld = 0;
+			mLedAndSwitch[i].isPressed = 1;
+			mLedAndSwitch[i].lastPressTime = millis();
+			i = LINE6FBV_NUM_LED_AND_SWITCH; // exit loop
+		}
+	}
+};
+
+
+// called when key is released, returns hold state, so the hold information needs not to be store in the calling application
+byte Line6Fbv::mStopHold(byte inKey){
+
+	byte retVal = 0;
+
+	// Find the Switch in the array and set the value
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		if (mLedAndSwitch[i].key == inKey){
+			retVal = mLedAndSwitch[i].isHeld;
+			mLedAndSwitch[i].isHeld = 0;
+			mLedAndSwitch[i].isPressed = 0;
+			i = LINE6FBV_NUM_LED_AND_SWITCH; // exit loop
+		}
+	}
+	return retVal;
+};
+
+
+// check if hold time is elapsed while key is pressed
+void Line6Fbv::mCheckHold(){
+
+	unsigned long currentMillis = millis();
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		if (mLedAndSwitch[i].isPressed && !mLedAndSwitch[i].isHeld){
+			if (currentMillis - mLedAndSwitch[i].lastPressTime >= mLedAndSwitch[i].holdTime) {
+				if (mCbKeyHeld){
+					mLedAndSwitch[i].isHeld = 1;
+					mCbKeyHeld(mLedAndSwitch[i].key);
+				}
+			}
+		}
+	}
+
+};

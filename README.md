@@ -1,9 +1,11 @@
 # FBV2MIDI
 Use Line6 FBV to control different amps with the help of an Arduino Board.
 
-Update!!!
-now i'm able to control my VOX with the FBV!!!
 
+
+==========================================================
+first i want to control my VOX AD60VT
+===> it works now
 
 ==========================================================
 

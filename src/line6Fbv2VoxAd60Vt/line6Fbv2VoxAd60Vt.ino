@@ -123,7 +123,6 @@ void onFbvKeyPressed(byte inKey) {
 	case LINE6FBV_AMP1:   // Respond to Amp1 Amp2 and Wah Switch to switch on Stomp Pedal
 	case LINE6FBV_AMP2:
 	case LINE6FBV_PDL1_SW:
-		mWahAutoOnOff = 0;
 		mActStatusPdl = !mActStatusPdl;
 		switchStomp = 1;
 		break;
@@ -159,6 +158,10 @@ void onFbvKeyPressed(byte inKey) {
 	case LINE6FBV_FXLOOP:
 	case LINE6FBV_STOMP1:
 		fProcessTuner(inKey);
+		break;
+	case LINE6FBV_STOMP3:
+		mWahAutoOnOff = !mWahAutoOnOff;
+		mFbv.setLedOnOff(LINE6FBV_STOMP3, mWahAutoOnOff);
 		break;
 	}
 
@@ -301,7 +304,7 @@ void fSetNewBankValue(byte inKey){
 
 
 
-void onFbvKeyReleased(byte inKey) {
+void onFbvKeyReleased(byte inKey, byte inKeyHeld) {
 	//	mFbv.setLedOnOff(inKey, 0x00);
 
 	switch (inKey){
@@ -400,13 +403,15 @@ void onVoxStomp(byte inPdl, byte inMod, byte inDly, byte inRev){
 	Serial.println(inRev);
 
 	if (mWaitForStompInfo){
-		if (inPdl)
+		if (inPdl){
 			mWahAutoOnOff = 0;
+		}
 		else{
 			mWahAutoOnOff = 1;
 			Serial.println("APP Wah Auto=On");
 		}
 		mWaitForStompInfo = 0;
+		mFbv.setLedOnOff(LINE6FBV_STOMP3, mWahAutoOnOff);
 	}
 
 

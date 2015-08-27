@@ -4,7 +4,7 @@ it works with Hardware Serial Ports of the Arduino
 
 currently supported:
 
-- receiving KeyPressed and KeyReleased messages
+- receiving KeyPressed and KeyReleased messages and new: keyHold message
 - receiving Pedal Position Changes
 - receiving a heartbeat (every 7 seconds)
 - switching LEDs on and of
@@ -32,7 +32,7 @@ Functionallity:
    if the Effect is off by default in teh preset, the auto mode is activated.
    When the Pedal is moved, the effect is automatically switched on
    and after 0,7 seconds of no movement it is turned off again
-   if it is switched on using the switches, auto on/off is disabled until program change 
+   StompBox 3 indicates and switches this mode
 
 
 
