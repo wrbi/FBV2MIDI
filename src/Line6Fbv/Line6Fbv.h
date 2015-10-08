@@ -2,9 +2,9 @@
 *  @file       Line6Fbv.h
 *  Project     Arduino Line6 FBV Longboard to MIDI Library
 *  @brief      Line6 FBV Library for the Arduino
-*  @version    0.4
+*  @version    1.04
 *  @author     Joachim Wrba
-*  @date       09/08/15
+*  @date       2015.10.08
 *  @license    GPL v3.0
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -113,7 +113,7 @@ public:
 
 	// Definitions for callback functions
 	typedef void FunctTypeCbKeyPressed(byte);
-	typedef void FunctTypeCbKeyReleased(byte, byte); // the second byte indicates if the key wad held before
+	typedef void FunctTypeCbKeyReleased(byte, byte);
 	typedef void FunctTypeCbCtrlChanged(byte, byte);
 	typedef void FunctTypeCbHeartbeat();
 	typedef void FunctTypeCbKeyHeld(byte);
@@ -131,12 +131,16 @@ public:
 
 	// set staus of  a LED to flash --> updateUI must be called
 	void setLedFlash(byte inLed, int inDelayTime);
+	void setLedFlash(byte inLed, int inDelayTime, int inOnTime);
+
+	void syncLedFlash();
 
 	// process all LED changes on the FBV at once
 	void updateUI();
 
 	// set the 16 character Title --> updateUI must be called
 	void setDisplayTitle(char* inTitle);
+	void setDisplayTitle(byte* inTitle);
 
 	// set one of the first 4 digits (inNumDigit = 0-3): --> updateUI must be called
 	// the first 3 can be a character '0' - '9' or space
@@ -146,6 +150,10 @@ public:
 	// set the first 4 digits at once --> updateUI must be called
 	void setDisplayDigits(char* inDigits);
 
+	// set numeric value for the first 3 digits at once --> updateUI must be called
+	void setDisplayNumber(int inNumber);
+
+	
 	// display the flat sign (b) --> updateUI must be called
 	void setDisplayFlat(byte inOnOff);
 

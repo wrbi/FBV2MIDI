@@ -2,9 +2,9 @@
 *  @file       Line6Fbv.cpp
 *  Project     Arduino Line6 FBV Longboard to MIDI Library
 *  @brief      Line6 FBV Library for the Arduino
-*  @version    0.4
+*  @version    1.0
 *  @author     Joachim Wrba
-*  @date       09/08/15
+*  @date       2015.10.08
 *  @license    GPL v3.0
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -134,7 +134,22 @@ void Line6Fbv::setLedOnOff(byte inLed, byte inOnOff) {
 
 }
 
+void Line6Fbv::syncLedFlash() {
+	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
+		if (mLedAndSwitch[i].flash){
+			mLedAndSwitch[i].waitTime = 0;
+			mLedAndSwitch[i].isOn = false;
+			mLedAndSwitch[i].lastMillis = 0;
+		}
+	}
+
+}
+
 void Line6Fbv::setLedFlash(byte inLed, int inDelayTime) {
+	setLedFlash(inLed, inDelayTime, LINE6FBV_FLASH_TIME);
+}
+
+void Line6Fbv::setLedFlash(byte inLed, int inDelayTime, int inOnTime) {
 
 	// Find the Switch in the array and set the value
 	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
@@ -142,9 +157,9 @@ void Line6Fbv::setLedFlash(byte inLed, int inDelayTime) {
 			mLedAndSwitch[i].flash = 1;
 			mLedAndSwitch[i].isOn = 0;
 			mLedAndSwitch[i].lastMillis = 0;
-			if (inDelayTime > LINE6FBV_FLASH_TIME){
-				mLedAndSwitch[i].offTime = inDelayTime - LINE6FBV_FLASH_TIME; // ToDo intervals < 50 ms
-				mLedAndSwitch[i].onTime = LINE6FBV_FLASH_TIME;
+			if (inDelayTime > inOnTime){
+				mLedAndSwitch[i].offTime = inDelayTime - inOnTime; // ToDo intervals < 50 ms
+				mLedAndSwitch[i].onTime = inOnTime;
 			}
 			else{
 				mLedAndSwitch[i].offTime = inDelayTime / 2;
@@ -158,7 +173,7 @@ void Line6Fbv::setLedFlash(byte inLed, int inDelayTime) {
 void Line6Fbv::updateUI(){
 
 	unsigned long currentMillis = millis();
-
+	
 
 	// LEDs
 	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
@@ -220,6 +235,7 @@ void Line6Fbv::updateUI(){
 		sendDisplayData(mDisplayEmpty);
 	}
 	else if (mDisplay.flash){
+		
 		if (currentMillis - mDisplay.lastMillis >= mDisplay.waitTime) {
 			mDisplay.lastMillis = currentMillis;
 			if (!mDisplay.isShown)
@@ -228,7 +244,7 @@ void Line6Fbv::updateUI(){
 				mDisplay.waitTime = mDisplay.offTime;
 
 			mDisplay.isShown = !mDisplay.isShown;
-
+			
 			if (mDisplay.isShown)
 				sendDisplayData(mDisplay);
 			else
@@ -329,6 +345,20 @@ void Line6Fbv::read() {
 	mCheckHold();   // check elapsed time for "hold" state
 }
 
+void Line6Fbv::setDisplayTitle(byte* inTitle){
+
+	
+	char title[16];
+
+	for (size_t i = 0; i < 16; i++)
+	{
+			title[i] = inTitle[i];
+			if (title[i] == 0x00)
+				i = 16;
+	}
+
+	setDisplayTitle(title);
+}
 void Line6Fbv::setDisplayTitle(char* inTitle){
 
 	char title[16];
@@ -367,12 +397,48 @@ void Line6Fbv::setDisplayDigits(char* inDigits){
 
 }
 
+void Line6Fbv::setDisplayNumber(int inNumber){
+	int number;
+	byte digit_100;
+	byte digit_10;
+	byte digit_1;
+
+	number = inNumber % 1000; // only 3 digits possible
+
+	digit_100 = number / 100;
+	number = number % 100;
+	digit_10 = number / 10;
+	digit_1 = number % 10;
+
+	// char value for int
+	digit_100 += 0x30;
+	digit_10 += 0x30;
+	digit_1 += 0x30;
+
+	// suppress leading zero
+	if (digit_100 == 0x30){
+		digit_100 = 0x20;
+		if (digit_10 == 0x30){
+			digit_10 = 0x20;
+		}
+	}
+
+	setDisplayDigit(0, digit_100);
+	setDisplayDigit(1, digit_10);
+	setDisplayDigit(2, digit_1);
+
+}
+
+
 void Line6Fbv::setDisplayFlat(byte inOnOff){
 	mDisplay.flat = inOnOff;
 }
 
 void Line6Fbv::setDisplayFlash(int inOnTime, int inOffTime){
-	mDisplay.flash = 1;
+
+	mDisplay.flash = true;
+	mDisplay.show = false;
+	mDisplay.hide = false; 
 	mDisplay.onTime = inOnTime;
 	mDisplay.offTime = inOffTime;
 	mDisplay.lastMillis = 0;
