@@ -21,14 +21,14 @@
 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
+
 
 #include "Line6Fbv.h"
 #include "KPA.h"
 
 // had performance problems in earlier version
 // maybe no longer needed
-const int PAUSE_REQUESTS = 200;
+const int PAUSE_REQUESTS = 20;
 const int FLASH_TIME = 1000;
 
 // Controller Numbers for Pedals. default WAH and VOL
@@ -74,6 +74,7 @@ byte mNextPerformance = 0;   // for UP/DOWN events
 byte mActChannel = 0; // A B C D E=Favorite
 int mActPgmNum = 99999;
 
+bool mTunerIsOn = false;
 
 
 
@@ -199,6 +200,9 @@ void fResetFxSlotValues(){
 		mFxSlots[i].isWah = 0;
 		mFxSlots[i].isPitch = 0;
 	}
+	mFxSlots[FX_SLOT_POS_DLY].isEnabled = true;
+	mFxSlots[FX_SLOT_POS_REV].isEnabled = true;
+
 }
 
 // respond to pressed keys on the FBV
@@ -612,11 +616,13 @@ void fSendRequestsToKpa(){
 
 void onKpaCtlChanged(byte inCtlNum, byte inCtlVal)
 {
+	
 	Serial.print("onKpaCtlChanged ");
 	Serial.print(inCtlNum, HEX);
 	Serial.print(" - ");
 	Serial.print(inCtlVal, HEX);
 	Serial.println(" ");
+	
 	// only Bank Vhange LSB is relevant 
 	switch (inCtlNum)
 	{
@@ -630,10 +636,12 @@ void onKpaCtlChanged(byte inCtlNum, byte inCtlVal)
 
 void onKpaPgmChanged(byte inMidiPgmNum)
 {
+
 	Serial.print("onKpaPgmChanged ");
 	Serial.print(inMidiPgmNum, HEX);
 	Serial.println(" ");
-	
+
+
 	mMidiPgm = inMidiPgmNum;
 	
 	mActPgmNum = (mMidiBank * 128) + mMidiPgm;
@@ -650,15 +658,56 @@ void onKpaPgmChanged(byte inMidiPgmNum)
 	mSendInitialRequests = true;
 	fResetFxSlotValues();
 	fResetParamRequests();
-	
+	fSendSlotNameRequest();
 }
+
+
+void fSendSlotNameRequest(){
+	byte request[] = { 0xF0, 0x00, 0x20, 0x33, 0x00, 0x00, 0x47, 0x00, 0x0, 0x00, 0x01, 0x00, 0 /*slot nUmber*/, 0xF7 };
+
+	request[12] = mActChannel + 1;
+
+	mKpa.sendSysEx(request, 14);
+
+}
+
+void onKpaStringX(byte inXsb1, byte inXsb2, byte inXsb3, byte inXsb4, byte inXsb5, byte * inSysEx, unsigned int inByteNum){
+	Serial.println("StringX: ");
+	Serial.print(inXsb1, HEX);
+	Serial.print("-");
+	Serial.print(inXsb2, HEX);
+	Serial.print("-");
+	Serial.print(inXsb3, HEX);
+	Serial.print("-");
+	Serial.print(inXsb4, HEX);
+	Serial.print("-");
+	Serial.print(inXsb5, HEX);
+	Serial.print("->");
+
+	for (size_t i = 0; i < inByteNum; i++)
+	{
+		//Serial.print(inSysEx[i], HEX);
+		Serial.write(inSysEx[i]);
+		//Serial.print("-");
+	}
+	Serial.println();
+	
+	if (inXsb5 == (mActChannel + 1)){
+		
+		mFbv.setDisplayTitle(inSysEx);
+		mFbv.setLedOnOff(LINE6FBV_DISPLAY, 1);
+	}
+
+}
+
 
 
 void onKpaSysEx(byte* inSysExData, unsigned inSysExSize)
 {
-	
+	/*
 	if (inSysExData[8] == 0x7C)
 		return;
+	*/
 	Serial.print("onKpaSysEx ");
 	for (size_t i = 0; i < inSysExSize; i++){
 		Serial.print(inSysExData[i], HEX);
@@ -675,6 +724,7 @@ void onKpaParamSingle(byte inAddrPage, byte inParamNum, byte inMsb, byte inLsb)
 	
 	if (inAddrPage == 0x7C)
 	return;
+	
 	Serial.print("onKpaParamSingle ");
 	Serial.print(inAddrPage, HEX);
 	Serial.print(" - ");
@@ -709,6 +759,7 @@ void onKpaParamSingle(byte inAddrPage, byte inParamNum, byte inMsb, byte inLsb)
 									}
 								}
 								fSetLedForFxSlot(j);
+								mFbv.syncLedFlash();
 								break;
 								default:
 								break;
@@ -726,6 +777,15 @@ void onKpaParamSingle(byte inAddrPage, byte inParamNum, byte inMsb, byte inLsb)
 							fSetTapLed();
 						}
 						break;
+						case 0x7F:  // Tuner on/off
+							if (inParamNum == 0x7E){
+								mTunerIsOn = (inLsb % 2); // 1 =ON, 2 = OFF
+
+						}
+							break;
+
+						case 0x7D:
+							break;
 						default:
 						break;
 					}
@@ -748,6 +808,7 @@ void onKpaParamSingle(byte inAddrPage, byte inParamNum, byte inMsb, byte inLsb)
 
 void onKpaParamString(byte inAddrPage, byte inParamNum, byte* inStr, unsigned inStrSize)
 {
+	/*
 	Serial.print("onKpaParamString ");
 	Serial.print(inAddrPage, HEX);
 	Serial.print(" - ");
@@ -758,7 +819,7 @@ void onKpaParamString(byte inAddrPage, byte inParamNum, byte* inStr, unsigned in
 		Serial.write(inStr[i]);
 	}
 	Serial.println(" ");
-	
+	*/
 	
 	switch (inAddrPage)
 	{
@@ -767,6 +828,7 @@ void onKpaParamString(byte inAddrPage, byte inParamNum, byte* inStr, unsigned in
 		{
 			case KPA_PARAM_NUM_RIG_NAME:
 			mFbv.setDisplayTitle(inStr);
+			mFbv.setLedOnOff(LINE6FBV_DISPLAY, 1);
 		}
 	}
 }
@@ -776,7 +838,7 @@ void onKpaParamString(byte inAddrPage, byte inParamNum, byte* inStr, unsigned in
 
 void fSetTapLed(){
 	
-	Serial.print("fSetTapLed "); Serial.println(mBPM);
+	//Serial.print("fSetTapLed "); Serial.println(mBPM);
 	int ms;
 	
 	if (mBPM == 0){
@@ -813,6 +875,7 @@ void setup() {
 	mKpa.setHandleSysEx(&onKpaSysEx);
 	mKpa.setHandleParamSingle(&onKpaParamSingle); 
 	mKpa.setHandleParamString(&onKpaParamString);
+	mKpa.setHandleParamStringX(onKpaStringX);
 	
 	fInitFxSlots();
 	Serial.println("ready");
