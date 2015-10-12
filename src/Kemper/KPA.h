@@ -91,6 +91,7 @@ const byte KPA_LOOP_UNDO = 0x5D;
 		typedef void FunctTypeCbSysEx(byte* , unsigned);
 		typedef void FunctTypeCbParamSingle(byte, byte,byte,byte);
 		typedef void FunctTypeCbParamString(byte, byte, byte*,unsigned);
+		typedef void FunctTypeCbParamStringX(byte, byte, byte, byte, byte, byte*, unsigned int);
 		
 		KPA();
 		void begin(HardwareSerial * InSerial);
@@ -101,6 +102,7 @@ const byte KPA_LOOP_UNDO = 0x5D;
         
 		void sendLooperCmd(byte inCmd, byte inKeyPress);  // Control the LOOPER
         void sendParamRequest(byte inRequType, byte inAddrPage, byte inParamNum); // Ask for Values to display    
+		void sendParamRequestStringX(byte inXsb1, byte inXsb2, byte inXsb3, byte inXsb4, byte inXsb5); // Ask for Values to display    
 		void sendHeartbeat(); // tell KPA that midi controller is connected. needed for bidirectional communication
         void sendSysEx(byte *inSysEx, unsigned inBytes);  // send MIDI Sysex       
         
@@ -109,7 +111,7 @@ const byte KPA_LOOP_UNDO = 0x5D;
 		void setHandleSysEx(FunctTypeCbSysEx* cb);
 		void setHandleParamSingle(FunctTypeCbParamSingle* cb);
 		void setHandleParamString(FunctTypeCbParamString* cb);
-
+		void setHandleParamStringX(FunctTypeCbParamStringX* cb);
 		
 		private:
 		HardwareSerial * mSerial = 0;
@@ -123,6 +125,7 @@ const byte KPA_LOOP_UNDO = 0x5D;
 		FunctTypeCbSysEx * mCbSysEx = 0;
 		FunctTypeCbParamSingle * mCbParamSingle = 0;
 		FunctTypeCbParamString * mCbParamString = 0;
+		FunctTypeCbParamStringX * mCbParamStringX = 0;
 		
 		void processSysEx(void); 
 		

@@ -60,6 +60,10 @@ void KPA::setHandleParamString(FunctTypeCbParamString* cb)
 	mCbParamString = cb;
 }
 
+void KPA::setHandleParamStringX(FunctTypeCbParamStringX* cb)
+{
+	mCbParamStringX = cb;
+}
 
 void KPA::sendHeartbeat(void){
 	byte cnnStr[] = { 0xF0, 0x00, 0x20, 0x33, 0x02, 0x7F, 0x7E, 0x00, 0x40, 0x01, 0x36, 0x04, 0xF7 };
@@ -110,7 +114,18 @@ void KPA::sendParamRequest(byte inReqType, byte inAddrPage, byte inParamNum){
 }
 
 
+void KPA::sendParamRequestStringX(byte inXsb1, byte inXsb2, byte inXsb3, byte inXsb4, byte inXsb5){
 
+	byte request[] = { 0xF0, 0x00, 0x20, 0x33, 0x00, 0x00, 0x47, 0x00, 0, 0, 0, 0, 0, 0xF7 };
+	request[8] = inXsb1;
+	request[9] = inXsb2;
+	request[10] = inXsb3;
+	request[11] = inXsb4;
+	request[12] = inXsb5;
+
+	sendSysEx(request, 14);
+
+}
 
 
 
@@ -227,7 +242,7 @@ void KPA::processSysEx(){
 		}
 		break;
 	case 0x03:  // answer to single parameter request
-	case 0x07:
+	//case 0x07:
 		if (mCbParamString) {
 			for (size_t i = 0; i < KPA_SYSEX_SIZE; i++){
 				stringValue[i] = mDataBytes[i + 10];
@@ -239,7 +254,19 @@ void KPA::processSysEx(){
 			mCbParamString(addressPage, paramNumber, stringValue, stringSize);
 			cbFound = true;
 		}
-
+	case 0x07:  // answer to extended Strin
+		//case 0x07:
+		if (mCbParamStringX) {
+			for (size_t i = 0; i < KPA_SYSEX_SIZE; i++){
+				stringValue[i] = mDataBytes[i + 13];
+				if (stringValue[i] == 0x00)
+					i = KPA_SYSEX_SIZE;
+				else
+					stringSize = i + 1;
+			}
+			mCbParamStringX(mDataBytes[8], mDataBytes[9], mDataBytes[10], mDataBytes[11], mDataBytes[12], stringValue, stringSize);
+			cbFound = true;
+		}
 
 	}
 
