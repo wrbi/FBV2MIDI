@@ -242,7 +242,11 @@ void KPA::processSysEx(){
 		}
 		break;
 	case 0x03:  // answer to single parameter request
+<<<<<<< HEAD
 	//case 0x07:
+=======
+//	case 0x07:
+>>>>>>> origin/master
 		if (mCbParamString) {
 			for (size_t i = 0; i < KPA_SYSEX_SIZE; i++){
 				stringValue[i] = mDataBytes[i + 10];
