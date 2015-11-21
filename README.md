@@ -1,6 +1,7 @@
 UPDATE 21.11.2015
+=================
 
-New features:
+New features for the Kemper:
 
 in looper mode, digit 4 shows the Status:
 
