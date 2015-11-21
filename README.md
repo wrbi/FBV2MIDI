@@ -1,3 +1,44 @@
+UPDATE 21.11.2015
+
+New features:
+
+in looper mode, digit 4 shows the Status:
+
+L = Looper mode, but empty
+
+R = Record
+
+P = Play
+
+O = Overdub
+
+S = Stopped
+
+T = Triggered
+
+
+
+
+Tuning information is shown in the display, either when you select Tuner with the Chickehead or if you set the Volume pedal tu zero.
+
+
+in Browser Mode: the rig name is displayed, rigs can be selected with Bank up/down (like rig left, right)
+
+
+in Perfomance mode:
+Performance slot names are displayed
+
+With bank up/down the performance preview mode is selected and nhe new performance name is shown.
+it switches back after a few seconds if you don't switch to a channel, as the KPA does.
+
+
+for proper operation start teh KPA with performance mode and seitch to another Slot. after that you can use the Pedal.
+
+
+
+
+
+
 UPDATE 08.10.2015
 =================
 

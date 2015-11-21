@@ -21,6 +21,10 @@ Functionallity:
    and after 0,7 seconds of no movement it is turned off again
    StompBox 3 indicates and switches this mode
 
+this Folder contains an earlier Version of the line6 FBV Library.
+The ino file is not adapted to the latest version of the FBV libtrary found in the LINE6FBV folder.
+
+
 
 
 

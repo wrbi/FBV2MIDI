@@ -1,3 +1,15 @@
+Update 2015.11.21 
+=================
+added a completely new version.
+
+in this versions i use code pieces i got from several users.
+Thanx a lot.
+
+I copied the code snippets together and edited until it worked.
+The code is not nice and has to be refactored,
+but it works for now.
+Maybe i will do in a few months.
+
 
 Update 2015.10.17 
 =================

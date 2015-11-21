@@ -2,9 +2,9 @@
 *  @file       Line6Fbv.h
 *  Project     Arduino Line6 FBV Longboard to MIDI Library
 *  @brief      Line6 FBV Library for the Arduino
-*  @version    0.4
+*  @version    1.04
 *  @author     Joachim Wrba
-*  @date       09/08/15
+*  @date       2015.10.08
 *  @license    GPL v3.0
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -64,79 +64,47 @@ F0 02 20 <00=off/01=on>
 
 #include <Arduino.h>
 
-#define LINE6FBV_CONNECTION_LOST_TIME 8000
-
-enum{
-	LINE6FBV_KEY_NONE,
-LINE6FBV_FXLOOP,
-LINE6FBV_STOMP1,
-LINE6FBV_STOMP2,
-LINE6FBV_STOMP3,
-LINE6FBV_AMP1,
-LINE6FBV_AMP2,
-LINE6FBV_REVERB,
-LINE6FBV_PITCH,
-LINE6FBV_MOD,
-LINE6FBV_DELAY,
-LINE6FBV_TAP,
-LINE6FBV_UP,
-LINE6FBV_DOWN,
-LINE6FBV_CHANNELA,
-LINE6FBV_CHANNELB,
-LINE6FBV_CHANNELC,
-LINE6FBV_CHANNELD,
-LINE6FBV_FAVORITE,
-LINE6FBV_PDL1_GRN,
-LINE6FBV_PDL1_RED,
-LINE6FBV_PDL2_GRN,
-LINE6FBV_PDL2_RED,
-LINE6FBV_DISPLAY,
-LINE6FBV_PDL1_SW,
-LINE6FBV_PDL2_SW,
-LINE6FBV_NUM_LED_AND_SWITCH
-};
-
 // Constants used for different switches and LEDs
 // Switch + LED
-#define LINE6FBV_CC_KEY_NONE  0xFF
-#define LINE6FBV_CC_FXLOOP  0x02
-#define LINE6FBV_CC_STOMP1  0x12
-#define LINE6FBV_CC_STOMP2  0x22
-#define LINE6FBV_CC_STOMP3  0x32
-#define LINE6FBV_CC_AMP1  0x01
-#define LINE6FBV_CC_AMP2  0x11
-#define LINE6FBV_CC_REVERB  0x21
-#define LINE6FBV_CC_PITCH  0x31
-#define LINE6FBV_CC_MOD  0x41
-#define LINE6FBV_CC_DELAY  0x51
-#define LINE6FBV_CC_TAP  0x61
-#define LINE6FBV_CC_DOWN  0x00
-#define LINE6FBV_CC_UP  0x10
-#define LINE6FBV_CC_CHANNELA  0x20
-#define LINE6FBV_CC_CHANNELB  0x30
-#define LINE6FBV_CC_CHANNELC  0x40
-#define LINE6FBV_CC_CHANNELD  0x50
-#define LINE6FBV_CC_FAVORITE  0x60
+const byte LINE6FBV_FXLOOP = 0x02;
+const byte LINE6FBV_STOMP1 = 0x12;
+const byte LINE6FBV_STOMP2 = 0x22;
+const byte LINE6FBV_STOMP3 = 0x32;
+const byte LINE6FBV_AMP1 = 0x01;
+const byte LINE6FBV_AMP2 = 0x11;
+const byte LINE6FBV_REVERB = 0x21;
+const byte LINE6FBV_PITCH = 0x31;
+const byte LINE6FBV_MOD = 0x41;
+const byte LINE6FBV_DELAY = 0x51;
+const byte LINE6FBV_TAP = 0x61;
+const byte LINE6FBV_DOWN = 0x00;
+const byte LINE6FBV_UP = 0x10;
+const byte LINE6FBV_CHANNELA = 0x20;
+const byte LINE6FBV_CHANNELB = 0x30;
+const byte LINE6FBV_CHANNELC = 0x40;
+const byte LINE6FBV_CHANNELD = 0x50;
+const byte LINE6FBV_FAVORITE = 0x60;
 
 // SWITCH Only
-#define LINE6FBV_CC_PDL1_SW  0x43
-#define LINE6FBV_CC_PDL2_SW  0x53
+const byte LINE6FBV_PDL1_SW = 0x43;
+const byte LINE6FBV_PDL2_SW = 0x53;
 
 // LED ONLY
-#define LINE6FBV_CC_PDL1_GRN  0x03
-#define LINE6FBV_CC_PDL1_RED  0x13
-#define LINE6FBV_CC_PDL2_GRN  0x33
-#define LINE6FBV_CC_PDL2_RED  0x23
-#define LINE6FBV_CC_DISPLAY  0x0A
+const byte LINE6FBV_PDL1_GRN = 0x03;
+const byte LINE6FBV_PDL1_RED = 0x13;
+const byte LINE6FBV_PDL2_GRN = 0x33;
+const byte LINE6FBV_PDL2_RED = 0x23;
+const byte LINE6FBV_DISPLAY = 0x0A;
 
 
-#define LINE6FBV_CC_PDL1  0x00
-#define LINE6FBV_CC_PDL2  0x01
+const byte LINE6FBV_PDL1 = 0x00;
+const byte LINE6FBV_PDL2 = 0x01;
 
 
 // internal use only, don't know how to code a constant inside the class
-
-#define LINE6FBV_FLASH_TIME  50
+const int LINE6FBV_NUM_LED_AND_SWITCH = 25;
+const int LINE6FBV_FLASH_TIME = 50;
+const int LINE6FBV_HOLD_TIME = 2000;
 
 
 class Line6Fbv {
@@ -148,7 +116,6 @@ public:
 	typedef void FunctTypeCbKeyReleased(byte, byte);
 	typedef void FunctTypeCbCtrlChanged(byte, byte);
 	typedef void FunctTypeCbHeartbeat();
-	typedef void FunctTypeCbDisconnected();
 	typedef void FunctTypeCbKeyHeld(byte);
 
 	// just the constructor
@@ -168,14 +135,12 @@ public:
 
 	void syncLedFlash();
 
-	// switch status of a LED on or off --> updateUI must be called
-	void setHoldTime(byte inBtn, unsigned int inHoldTime);
-
 	// process all LED changes on the FBV at once
 	void updateUI();
 
 	// set the 16 character Title --> updateUI must be called
 	void setDisplayTitle(char* inTitle);
+	void setDisplayTitle(byte* inTitle);
 
 	// set one of the first 4 digits (inNumDigit = 0-3): --> updateUI must be called
 	// the first 3 can be a character '0' - '9' or space
@@ -207,25 +172,21 @@ public:
 	// set a callback Function for pedal usage
 	void setHandleCtrlChanged(FunctTypeCbCtrlChanged* cb);
 
-	void setHandleDisconnected(FunctTypeCbDisconnected* cb);
-
 	// set a callback Function for heartbeat
 	// a heartbeat is sent every 7 seconds
 	// this callback can be used to check the connection status
 	void setHandleHeartbeat(FunctTypeCbHeartbeat* cb);
 
-	void requestBoardType();
-	void requestPedalPos();
+
 
 
 private:
 
-	FunctTypeCbKeyPressed*		mCbKeyPressed;
-	FunctTypeCbKeyReleased*		mCbKeyReleased;
-	FunctTypeCbKeyHeld*			mCbKeyHeld;
-	FunctTypeCbCtrlChanged*		mCbCtrlChanged;
-	FunctTypeCbHeartbeat*		mCbHeartbeat;
-	FunctTypeCbDisconnected*  mCbDisconnected;
+	FunctTypeCbKeyPressed*  mCbKeyPressed;
+	FunctTypeCbKeyReleased* mCbKeyReleased;
+	FunctTypeCbKeyHeld*     mCbKeyHeld;
+	FunctTypeCbCtrlChanged* mCbCtrlChanged;
+	FunctTypeCbHeartbeat*   mCbHeartbeat;
 
 	struct LedAndSwitch{
 		byte key;
@@ -256,7 +217,7 @@ private:
 		byte show;
 		byte hide;
 		byte flash;
-	
+
 	};
 
 	Display mDisplay;
@@ -273,9 +234,5 @@ private:
 	void mStartHold(byte inKey);
 	byte mStopHold(byte inKey);
 	void mCheckHold();
-
-	uint8_t mGetLedInArray(byte inCC);
-
-	
 };
 #endif
