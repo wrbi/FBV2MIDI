@@ -1,3 +1,13 @@
+Update 2016.10.10 
+=================
+Version 1 for Kemper OS 4.x
+
+fixes a bug when trying to switch to slot number 5 in higer performance numbers 
+
+also switches on an LED at Pin 13 just to see Arduino is switched on
+
+
+
 Update 2015.11.21 
 =================
 added a completely new version.
