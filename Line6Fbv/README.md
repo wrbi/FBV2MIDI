@@ -13,3 +13,10 @@ currently supported:
 - write Text to the Display
 
 
+================================================
+
+Update 15.10.2016
+
+solved a problem with Display flashing
+flashing now has to be turned off exlicitly with setDisplayFlash(0,0);
+

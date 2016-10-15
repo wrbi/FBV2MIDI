@@ -2,9 +2,9 @@
 *  @file       Line6Fbv.cpp
 *  Project     Arduino Line6 FBV Longboard to MIDI Library
 *  @brief      Line6 FBV Library for the Arduino
-*  @version    0.4
+*  @version    1.1
 *  @author     Joachim Wrba
-*  @date       09/08/15
+*  @date       15/10/16
 *  @license    GPL v3.0
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -65,8 +65,8 @@ Line6Fbv::Line6Fbv() {
 	mLedAndSwitch[LINE6FBV_PDL2_GRN].key = LINE6FBV_CC_PDL2_GRN;
 	mLedAndSwitch[LINE6FBV_PDL2_RED].key = LINE6FBV_CC_PDL2_RED;
 	mLedAndSwitch[LINE6FBV_DISPLAY].key = LINE6FBV_CC_DISPLAY;
-	mLedAndSwitch[LINE6FBV_PDL1_SW].key = LINE6FBV_CC_PDL1;
-	mLedAndSwitch[LINE6FBV_PDL2_SW].key = LINE6FBV_CC_PDL2;
+	mLedAndSwitch[LINE6FBV_PDL1_SW].key = LINE6FBV_CC_PDL1_SW;
+	mLedAndSwitch[LINE6FBV_PDL2_SW].key = LINE6FBV_CC_PDL2_SW;
 
 
 	for (int i = 0; i < LINE6FBV_NUM_LED_AND_SWITCH; i++){
@@ -248,19 +248,14 @@ void Line6Fbv::updateUI(){
 	}
 
 	// Display
-	if (mDisplay.show){
-		mDisplay.show = 0;
+	if (!mDisplay.flash){
 		mDisplay.isShown = 1;
-		mDisplay.flash = 0;
-		sendDisplayData(mDisplay);
+		if (mDisplayDataChanged){
+			sendDisplayData(mDisplay);
+			mDisplayDataChanged = 0;
+		}
 	}
-	else if (mDisplay.hide){
-		mDisplay.hide = 0;
-		mDisplay.isShown = 0;
-		mDisplay.flash = 0;
-		sendDisplayData(mDisplayEmpty);
-	}
-	else if (mDisplay.flash){
+	else{
 		if (currentMillis - mDisplay.lastMillis >= mDisplay.waitTime) {
 			mDisplay.lastMillis = currentMillis;
 			if (!mDisplay.isShown)
@@ -389,17 +384,16 @@ void Line6Fbv::setDisplayTitle(char* inTitle){
 
 	char title[16];
 
+	mDisplayDataChanged = 1;
+
 	strncpy(title, inTitle, 16);
-	mDisplay.flash = 0;
-	mDisplay.show = 1;
 
 	for (int i = 0; i < 16; i++){
 		mDisplay.title[i] = title[i];
 	}
 }
 void Line6Fbv::setDisplayDigit(int inNum, char inDigit){
-	mDisplay.flash = 0;
-	mDisplay.show = 1;
+	mDisplayDataChanged = 1;
 
 	if (inNum < 3)
 		mDisplay.numDigits[inNum] = inDigit;
@@ -412,9 +406,10 @@ void Line6Fbv::setDisplayDigits(char* inDigits){
 
 	char digits[4];
 
+	mDisplayDataChanged = 1;
+
 	strncpy(digits, inDigits, 4);
-	mDisplay.flash = 0;
-	mDisplay.show = 1;
+	
 
 	for (int i = 0; i < 3; i++){
 		mDisplay.numDigits[i] = digits[i];
@@ -428,6 +423,8 @@ void Line6Fbv::setDisplayNumber(int inNumber){
 	byte digit_100;
 	byte digit_10;
 	byte digit_1;
+
+	mDisplayDataChanged = 1;
 
 	number = inNumber % 1000; // only 3 digits possible
 
@@ -456,15 +453,22 @@ void Line6Fbv::setDisplayNumber(int inNumber){
 
 
 void Line6Fbv::setDisplayFlat(byte inOnOff){
+	mDisplayDataChanged = 1;
 	mDisplay.flat = inOnOff;
 }
 
 void Line6Fbv::setDisplayFlash(int inOnTime, int inOffTime){
+	if (inOnTime != 0){
 	mDisplay.flash = 1;
 	mDisplay.onTime = inOnTime;
 	mDisplay.offTime = inOffTime;
 	mDisplay.lastMillis = 0;
-}
+	}
+	else{
+		mDisplay.flash = 0;
+		}
+	}
+
 
 
 void Line6Fbv::sendDisplayData(Display inDisplay){

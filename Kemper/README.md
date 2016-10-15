@@ -1,3 +1,12 @@
+Update 2016.10.15 
+=================
+new source file FBV2KPA_V4_02.ino added
+
+solved a bug with display flashing
+
+updated Line6Fbv library needed
+
+
 Update 2016.10.10 
 =================
 Version 1 for Kemper OS 4.x

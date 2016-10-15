@@ -2,9 +2,9 @@
 *  @file       Line6Fbv.h
 *  Project     Arduino Line6 FBV Longboard to MIDI Library
 *  @brief      Line6 FBV Library for the Arduino
-*  @version    0.4
+*  @version    1.1
 *  @author     Joachim Wrba
-*  @date       09/08/15
+*  @date       15/10/16
 *  @license    GPL v3.0
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -123,10 +123,10 @@ LINE6FBV_NUM_LED_AND_SWITCH
 #define LINE6FBV_CC_PDL2_SW  0x53
 
 // LED ONLY
-#define LINE6FBV_CC_PDL1_GRN  0x03
-#define LINE6FBV_CC_PDL1_RED  0x13
-#define LINE6FBV_CC_PDL2_GRN  0x33
+#define LINE6FBV_CC_PDL1_RED  0x03
+#define LINE6FBV_CC_PDL1_GRN  0x13
 #define LINE6FBV_CC_PDL2_RED  0x23
+#define LINE6FBV_CC_PDL2_GRN  0x33
 #define LINE6FBV_CC_DISPLAY  0x0A
 
 
@@ -188,11 +188,12 @@ public:
 	// set numeric value for the first 3 digits at once --> updateUI must be called
 	void setDisplayNumber(int inNumber);
 
-	
+
 	// display the flat sign (b) --> updateUI must be called
 	void setDisplayFlat(byte inOnOff);
 
 	// let the diusplay light flash --> updateUI must be called
+	// InOnTime == 0 stops flashing{
 	void setDisplayFlash(int inOnTime, int inOffTime);
 
 	// set a callback Function for pressed Key
@@ -253,14 +254,13 @@ private:
 		int waitTime;
 		unsigned long lastMillis;
 		byte isShown;
-		byte show;
-		byte hide;
 		byte flash;
 	
 	};
 
 	Display mDisplay;
 	Display mDisplayEmpty;  // for flashing
+	byte mDisplayDataChanged;  // send only changes
 	LedAndSwitch mLedAndSwitch[LINE6FBV_NUM_LED_AND_SWITCH];
 	HardwareSerial * mSerial;
 	byte mDataBytes[5];
