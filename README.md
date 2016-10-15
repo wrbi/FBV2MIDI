@@ -1,3 +1,12 @@
+Update 15.10.2016 
+=================
+new source file FBV2KPA_V4_02.ino added
+
+solved a bug with display flashing
+
+updated Line6Fbv library needed
+
+
 UPDATE 21.11.2015
 =================
 
