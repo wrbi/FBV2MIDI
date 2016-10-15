@@ -2,9 +2,20 @@ Update 15.10.2016
 =================
 new source file FBV2KPA_V4_02.ino added
 
-solved a bug with display flashing
+- scroll performances whenn holding UP or DOWN
 
-updated Line6Fbv library needed
+- solved a bug with display flashing
+
+==> updated Line6Fbv library needed
+
+
+Update 10.10.2016
+=================
+Version 1 for Kemper OS 4.x
+
+fixes a bug when trying to switch to slot number 5 in higer performance numbers 
+
+also switches on an LED at Pin 13 just to see Arduino is switched on
 
 
 UPDATE 21.11.2015
