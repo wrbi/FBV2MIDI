@@ -1,3 +1,10 @@
+Update 17.10.2016 
+=================
+new source file FBV2KPA_V4_03.ino added
+
+- Bug fixed when switching the same slot in the next performance
+
+
 Update 15.10.2016 
 =================
 new source file FBV2KPA_V4_02.ino added
