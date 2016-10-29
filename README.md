@@ -1,3 +1,11 @@
+Update 29.10.2016 
+=================
+
+ New in 4.4:
+  Scanning Rig Tag "Comment" for pedal assignment
+
+
+
 Update 17.10.2016 
 =================
 new source file FBV2KPA_V4_03.ino added

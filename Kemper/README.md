@@ -1,3 +1,51 @@
+Update 29.10.2016 
+=================
+
+ New in 4.4:
+  Scanning Rig Tag "Comment" for pedal assignment
+    Tags in Comment:
+      P<pdlNum><request>=<value>
+         <pdlNum>:
+           1 or 2
+         <request>:
+           A = activeControl
+           I = inactiveControl (activated via switch)
+               <value>:
+                 _ =  none
+                 W = Wah
+                 V = Vol
+                 P = Pitch
+                 M = Morph
+                 G = Gain
+           P = Pedal Position of the active contoller
+               <value>:
+                 H = Heel  (1 not 0)
+                 T = Toe   (127)
+                 1 - 9 = Volume Steps of 12
+   If Volume is not within the active controllers, a volume of 127 is sent.
+
+   Example:   Rig Comment "P1A=M;P1I=P;P2I=W"
+              ==> Pedal 1 is Morph
+              ==> Pedal 1 after switching is Pitch  
+              ==> Pedal 2 stays deafault Volume as it is not in the comment as (P2A=<>) 
+              ==> Pedal 2 after switching is Wah   
+
+
+
+   Pedal LEDs show Controller Type
+   |       |Green  |Red    |
+   +++++++++++++++++++++++++
+   | none  | off   | off   |
+   | Wah   | off   | flash |
+   | Gain  | off   | on    |
+   | Vol   | on    | off   |
+   | Pitch | flash | off   |
+   | Morph | flash | flash |
+
+
+* Known issue:
+  controller Number for Pedal light for Pedal 1 has to be analyzed again
+
 
 Update 17.10.2016 
 =================
