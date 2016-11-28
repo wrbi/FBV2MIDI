@@ -2,9 +2,9 @@
 *  @file       Kemper.h
 *  Project     Arduino Library for MIDI Communication with Kemper Profiling Amplifier
 *  @brief      Kemper Library for the Arduino
-*  @version    1.0
+*  @version    4.4
 *  @author     Joachim Wrba
-*  @date       2015.10.08
+*  @date       2016.10.23
 *  @license    GPL v3.0
 *
 *  This program is free software: you can redistribute it and/or modify
@@ -59,8 +59,8 @@
 #define KPA_PARAM_STOMP_X_STATE				0x1C03
 #define KPA_PARAM_STOMP_MOD_TYPE			0x1D00
 #define KPA_PARAM_STOMP_MOD_STATE			0x1D03
-#define KPA_PARAM_DELAY_TYPE 				0x2500
-#define KPA_PARAM_DELAY_STATE				0x2502
+#define KPA_PARAM_DELAY_TYPE 				0x1E00
+#define KPA_PARAM_DELAY_STATE				0x2502  // not after 1E1E
 #define KPA_PARAM_REVERB_TYPE				0x2580
 #define KPA_PARAM_REVERB_STATE				0x2582
 
@@ -69,19 +69,26 @@
 #define KPA_PARAM_LOOPER_STATE              0x3E2A
 
 #define KPA_STRING_ID_RIG_NAME				0x0001
+#define KPA_STRING_ID_RIG_COMMENT    		0x0004
 #define KPA_STRING_ID_PERF_NAME				0x4000
-#define KPA_STRING_ID_PERF_NAME_PREVIEW  	0x4010
 #define KPA_STRING_ID_SLOT1_NAME			0x4001
 #define KPA_STRING_ID_SLOT2_NAME			0x4002
 #define KPA_STRING_ID_SLOT3_NAME			0x4003
 #define KPA_STRING_ID_SLOT4_NAME			0x4004
 #define KPA_STRING_ID_SLOT5_NAME			0x4005 
+#define KPA_STRING_ID_PERF_NAME_PREVIEW  	0x4010
+#define KPA_STRING_ID_SLOT1_NAME_PREVIEW	0x4011
+#define KPA_STRING_ID_SLOT2_NAME_PREVIEW	0x4012
+#define KPA_STRING_ID_SLOT3_NAME_PREVIEW	0x4013
+#define KPA_STRING_ID_SLOT4_NAME_PREVIEW	0x4014
+#define KPA_STRING_ID_SLOT5_NAME_PREVIEW	0x4015 
 
 
 
 // continuous controller numbers
 #define KPA_CC_WAH    0x01
 #define KPA_CC_VOL    0x07
+#define KPA_CC_MORPH  0x0B
 #define KPA_CC_PITCH  0x04
 #define KPA_CC_GAIN   0x48
 
@@ -96,6 +103,7 @@
 #define KPA_CC_FX_DLY 0x1B  // 27 keep tail (26 cut tail)
 #define KPA_CC_FX_REV 0x1D  // 29 keep tail (28 cut tail)
 	
+#define KPA_CC_PERFORMANCE_NUM_PREVIEW    0x2F
 
 
 #define KPA_PARAM_TYPE_SINGLE  0x41
